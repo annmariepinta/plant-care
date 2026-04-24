@@ -10,6 +10,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Mobile PWA: reduce tap flash, calmer edge scroll in standalone */
+@media (max-width: 1023px) {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
 .scrollable-div::-webkit-scrollbar {
   width: 5px;
   overflow: scroll;
