@@ -11,7 +11,7 @@ const Contact = () => {
 
   return (
     <>
-      <div className="px-[20px] lg:px-[120px] flex justify-between items-center flex-col lg:flex-row">
+      <div className="px-[20px] lg:px-[120px] flex justify-between items-center flex-col lg:flex-row pt-[12px] lg:pt-[24px]">
         <div className='p-[10px] flex-col lg:flex-row w-full flex justify-between items-center lg:items-start gap-[0px]'>
           <div className="w-[100%] lg:w-[50%] bg-primary relative rounded-[10px] p-[15px] lg:p-[40px] flex flex-col justify-between items-center lg:items-start gap-[60px] lg:gap-[140px]">
             <div className="flex flex-col items-center lg:items-start gap-[6px]">
@@ -19,7 +19,7 @@ const Contact = () => {
                 Contact Information
               </h1>
               <p className="text-[#C9C9C9]  text-[11px] lg:text-[18px] text-center lg:text-left">
-                Say something to start a live chat!
+                Questions about tomato photos or results? Send us a message.
               </p>
             </div>
             <div className="flex flex-col items-center lg:items-start justify-between gap-[15px] lg:gap-[50px]">
@@ -60,6 +60,10 @@ const Contact = () => {
 
 
           <div className='w-[100%] lg:w-[50%] flex flex-col justify-start items-start px-[20px] py-[30px] lg:p-[50px] gap-[45px]  h-full'>
+            <div className='w-full rounded-[18px] border border-black/10 p-4 lg:p-5 text-tertiary'>
+              <p className='text-[14px] lg:text-[16px]'><span className='font-semibold text-black'>Typical response time:</span> 1–2 business days.</p>
+              <p className='text-[14px] lg:text-[16px] pt-2'>For faster help, include a screenshot of your result and mention your tomato variety + growing setup (garden/greenhouse/pots).</p>
+            </div>
             <div className='flex flex-col lg:flex-row justify-between items-center gap-[40px] w-full'>
               <div className='flex justify-start flex-col w-[100%] lg:w-[50%] group'>
                 <label htmlFor="fName" className=''>Full Name</label>
@@ -87,6 +91,20 @@ const Contact = () => {
             <div className='flex w-full items-end justify-center lg:justify-end'>
               <a href={`mailto:IITA-Ckan@cgiar.org?subject=${category}&body=Name: ${first} %0D%0A Email: ${email}%0D%0A Phone: ${number}%0D%0A Message: ${message}`} className='bg-primary w-full lg:w-[40%] text-white px-[24px] font-[500] text-center rounded-[8px] border-secondary border-[2px] py-[8px] send'>Send Message
               </a>
+            </div>
+
+            <div className='w-full pt-4'>
+              <h2 className='text-[22px] lg:text-[28px] font-semibold'>FAQ</h2>
+              <div className='pt-4 space-y-4'>
+                <div className='rounded-[18px] border border-black/10 p-4 lg:p-5'>
+                  <h3 className='font-semibold'>What should I include in my message?</h3>
+                  <p className='text-tertiary pt-2 text-[14px] lg:text-[16px] leading-relaxed'>Tell us what you uploaded (leaf/fruit), what you expected, and attach a screenshot of the result if possible.</p>
+                </div>
+                <div className='rounded-[18px] border border-black/10 p-4 lg:p-5'>
+                  <h3 className='font-semibold'>Can you help with non-tomato plants?</h3>
+                  <p className='text-tertiary pt-2 text-[14px] lg:text-[16px] leading-relaxed'>This site is tuned for tomatoes. For best results, upload only tomato leaves, stems, or fruit.</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

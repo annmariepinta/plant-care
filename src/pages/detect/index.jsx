@@ -61,7 +61,7 @@ const Detect = () => {
             } else {
                 toast({
                     status: "error",
-                    description: "This is not a plant please upload a clearer plant image",
+                    description: "This doesn't look like a plant. Please upload a clearer tomato plant/leaf image.",
                 });
             }
             setLoader(false);
@@ -91,7 +91,7 @@ const Detect = () => {
                     <h1 className="text-[36px] lg:text-[48px] pb-[20px]">How To <span className="font-bold">Detect</span></h1>
 
                     <ul className='text-[18px] lg:text-[24px] list-disc pl-4 lg:pl-0 px-4 text-tertiary'>
-                        <li>Click on the &quot;Upload a file&quot; button in the file input field. Select and upload a clear image of the affected plant to ensure accurate analysis.
+                        <li>Click on the &quot;Upload a file&quot; button. Select a clear photo of the affected tomato leaf (or fruit) for the most accurate analysis.
                         </li>
                         <li>After uploading, click the &quot;Analyze&quot; button to initiate the disease detection process.
                         </li>
@@ -103,6 +103,16 @@ const Detect = () => {
                             - A brief description of each disease. <br />
                             - Suggested treatments to manage the detected diseases effectively.</p>
                     </ul>
+
+                    <div className='mt-8 rounded-[22px] border border-black/5 p-5 lg:p-6'>
+                        <h2 className='text-[20px] lg:text-[22px] font-semibold'>Photo tips for better results</h2>
+                        <ul className='mt-3 space-y-2 text-[16px] lg:text-[18px] text-tertiary list-disc pl-5 leading-relaxed'>
+                            <li>Use bright natural light (avoid harsh shadows)</li>
+                            <li>Take one close-up of the affected area + one wider plant shot</li>
+                            <li>For leaves: capture both the front and underside</li>
+                            <li>Avoid blurry photos and busy backgrounds</li>
+                        </ul>
+                    </div>
                 </div>
                 <div className='lg:w-1/2 flex justify-center items-center w-full'>
                     <div className='flex flex-col justify-center w-full items-center gap-10 overflow-x-hidden text-tertiary'>
@@ -153,6 +163,25 @@ const Detect = () => {
                             </>
                         )}
                         </button>
+                    </div>
+                </div>
+            </div>
+
+            <div className='mt-12 lg:mt-16 rounded-[22px] border border-black/5 bg-white p-6 lg:p-10'>
+                <h2 className='text-[26px] lg:text-[34px] font-semibold'>What you can check</h2>
+                <p className='text-[16px] lg:text-[18px] text-tertiary pt-2 leading-relaxed'>Upload tomato plant photos to help spot common leaf and fruit symptoms.</p>
+                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 pt-6'>
+                    <div className='rounded-[18px] border border-black/5 p-5'>
+                        <h3 className='font-semibold text-[18px]'>Leaf spots &amp; blotches</h3>
+                        <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Speckling, rings, or spreading lesions.</p>
+                    </div>
+                    <div className='rounded-[18px] border border-black/5 p-5'>
+                        <h3 className='font-semibold text-[18px]'>Blight-like browning</h3>
+                        <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Rapid browning, leaf collapse, or darkening.</p>
+                    </div>
+                    <div className='rounded-[18px] border border-black/5 p-5'>
+                        <h3 className='font-semibold text-[18px]'>Pest &amp; stress signals</h3>
+                        <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Chewing, curling, yellowing, or stunted growth.</p>
                     </div>
                 </div>
             </div>
@@ -246,7 +275,7 @@ const Detect = () => {
             </div>
 
             <div className='flex justify-center items-center mt-[80px] pb-[40px]'>
-                <div className='h-[4px] rounded-[10px] w-[70%] bg-[#1B4332]'></div>
+                <div className='h-[4px] rounded-[10px] w-[70%] bg-quaternary'></div>
             </div>
         </div>);
 }

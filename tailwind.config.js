@@ -9,11 +9,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#2D6A4F",
-        secondary: "#52B788",
+        primary: "#C1121F",
+        secondary: "#2A9D55",
         tertiary: "#767676",
-        quaternary: "#1B4332",
-        quinary: "#FFFF00",
+        quaternary: "#1F3D2B",
+        quinary: "#FFB703",
         overlayy: "rgba(25, 28, 31, 0.5)",
       },
       fontFamily: {

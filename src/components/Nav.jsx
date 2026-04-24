@@ -20,13 +20,13 @@ const Nav = () => {
         setIsOpen(!isOpen);
     };
     return (<>
-        <div className="py-[20px] lg:py-[50px] px-[20px] lg:px-[120px] flex justify-between items-center w-[100vw] overflow-x-hidden">
+        <div className="py-[16px] lg:py-[28px] px-[20px] lg:px-[120px] flex justify-between items-center w-[100vw] overflow-x-hidden">
             <Link to={'/'} className='hidden lg:block'>
-                <img src={logo} alt="" />
+                <img src={logo} alt="Tomato Planet" className="h-[44px] w-auto" />
             </Link>
 
             <div className='hidden lg:block'>
-                <div className='flex justify-end items-center gap-[90px] text-[24px]'>
+                <div className='flex justify-end items-center gap-[56px] text-[18px]'>
                     <NavLink to={'/'} style={navLinkStyle}
                     >Home</NavLink>
                     <NavLink to={'/detect'} style={navLinkStyle}
