@@ -88,20 +88,27 @@ const Detect = () => {
         <div className="px-[20px] lg:px-[120px] overflow-x-hidden">
             <div className='flex flex-col lg:flex-row justify-between items-center gap-[56px]'>
                 <div className='lg:w-1/2'>
-                    <h1 className="text-[36px] lg:text-[48px] pb-[20px]">How To <span className="font-bold">Detect</span></h1>
+                    <h1 className="text-[36px] lg:text-[48px] pb-[20px]">How to Detect <span className="font-bold">Tomato Leaf Diseases</span></h1>
 
-                    <ul className='text-[18px] lg:text-[24px] list-disc pl-4 lg:pl-0 px-4 text-tertiary'>
-                        <li>Click on the &quot;Upload a file&quot; button. Select a clear photo of the affected tomato leaf (or fruit) for the most accurate analysis.
+                    <ul className='text-[18px] lg:text-[24px] list-disc pl-4 lg:pl-0 px-4 text-tertiary space-y-2'>
+                        <li>Click on the &quot;Upload a file&quot; button and select a clear image of a tomato leaf.</li>
+                        <li>Ensure the leaf is clearly visible for accurate analysis.</li>
+                        <li>After uploading, click the &quot;Analyze&quot; button to start the detection process.</li>
+                        <li>
+                            Once the analysis is complete, the system will provide:
+                            <ul className='list-disc pl-6 mt-2 space-y-1'>
+                                <li>
+                                    The predicted class of the leaf:
+                                    <ul className='list-disc pl-6 mt-2 space-y-1'>
+                                        <li>Early Blight</li>
+                                        <li>Late Blight</li>
+                                        <li>Leaf Mold</li>
+                                        <li>Healthy Tomato Leaf</li>
+                                        <li>Non-Tomato Leaf</li>
+                                    </ul>
+                                </li>
+                            </ul>
                         </li>
-                        <li>After uploading, click the &quot;Analyze&quot; button to initiate the disease detection process.
-                        </li>
-                        <li>Once the analysis is complete, you will receive a detailed report containing:
-                        </li>
-                        <p className='pl-3'>- Three possible diseases that match the symptoms observed in the image. <br />
-                            - The health status of the plant. <br />
-                            - The names of the diseases. <br />
-                            - A brief description of each disease. <br />
-                            - Suggested treatments to manage the detected diseases effectively.</p>
                     </ul>
 
                     <div className='mt-8 rounded-[22px] border border-black/5 p-5 lg:p-6'>
@@ -172,16 +179,16 @@ const Detect = () => {
                 <p className='text-[16px] lg:text-[18px] text-tertiary pt-2 leading-relaxed'>Upload tomato plant photos to help spot common leaf and fruit symptoms.</p>
                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 pt-6'>
                     <div className='rounded-[18px] border border-black/5 p-5'>
-                        <h3 className='font-semibold text-[18px]'>Leaf spots &amp; blotches</h3>
-                        <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Speckling, rings, or spreading lesions.</p>
+                        <h3 className='font-semibold text-[18px]'>Early Blight</h3>
+                        <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Brown circular spots with concentric rings, usually appearing on older leaves and spreading upward.</p>
                     </div>
                     <div className='rounded-[18px] border border-black/5 p-5'>
-                        <h3 className='font-semibold text-[18px]'>Blight-like browning</h3>
-                        <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Rapid browning, leaf collapse, or darkening.</p>
+                        <h3 className='font-semibold text-[18px]'>Late Blight</h3>
+                        <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Dark, water-soaked lesions that spread rapidly, causing leaves to turn brown or black and collapse.</p>
                     </div>
                     <div className='rounded-[18px] border border-black/5 p-5'>
-                        <h3 className='font-semibold text-[18px]'>Pest &amp; stress signals</h3>
-                        <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Chewing, curling, yellowing, or stunted growth.</p>
+                        <h3 className='font-semibold text-[18px]'>Leaf Mold</h3>
+                        <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Yellow patches on the upper leaf surface with fuzzy mold growth underneath, common in humid conditions.</p>
                     </div>
                 </div>
             </div>

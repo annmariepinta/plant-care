@@ -26,20 +26,19 @@ const Contact = () => {
               <div className="flex flex-col lg:flex-row justify-center lg:justify-start items-center gap-[10px] lg:gap-[25px]">
                 {/* <img src={contactPhone} alt="" /> */}
                 <p className=" lg:text-[16px] text-center lg:text-left  text-white">
-                  +234 700800IITA (4482), +1 201 6336094
+                  +234 8104147997, +234 8032017114
                 </p>
               </div>
               <div className="flex flex-col lg:flex-row justify-center lg:justify-start  items-center gap-[10px] lg:gap-[25px]">
                 {/* <img src={contactMail} alt="" /> */}
                 <p className=" lg:text-[16px] text-center lg:text-left  text-white">
-                  IITA-Ckan@cgiar.org
+                  tomatoplanet.org
                 </p>
               </div>
               <div className="flex flex-col lg:flex-row relative z-[999] justify-center lg:justify-start  items-center gap-[10px] lg:gap-[25px]">
                 {/* <img src={contactLocation} alt="" /> */}
                 <p className=" lg:text-[16px] text-center lg:text-left  text-white">
-                  PMB 5320, Oyo Road, Ibadan 200001,
-                  Oyo State, Nigeria.
+                  Jos, Plateau State
                 </p>
               </div>
             </div>
@@ -89,7 +88,7 @@ const Contact = () => {
               <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder='Write your message...' id='mail' className='outline-none border-b-[1px] h-[200px] border-b-black p-2  text-[14px] text-black' />
             </div>
             <div className='flex w-full items-end justify-center lg:justify-end'>
-              <a href={`mailto:IITA-Ckan@cgiar.org?subject=${category}&body=Name: ${first} %0D%0A Email: ${email}%0D%0A Phone: ${number}%0D%0A Message: ${message}`} className='bg-primary w-full lg:w-[40%] text-white px-[24px] font-[500] text-center rounded-[8px] border-secondary border-[2px] py-[8px] send'>Send Message
+              <a href={`mailto:info@tomatoplanet.org?subject=${category}&body=Name: ${first} %0D%0A Email: ${email}%0D%0A Phone: ${number}%0D%0A Message: ${message}`} className='bg-primary w-full lg:w-[40%] text-white px-[24px] font-[500] text-center rounded-[8px] border-secondary border-[2px] py-[8px] send'>Send Message
               </a>
             </div>
 

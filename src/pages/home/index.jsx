@@ -37,7 +37,7 @@ const Home = () => {
             <div className="lg:w-1/2">
                 <h1 className="lg:text-[42px] text-[32px] leading-tight text-center lg:text-left">Welcome to <span className="font-bold">Tomato Planet</span></h1>
 
-                <p className='text-[18px] lg:pl-1 lg:text-[22px] leading-relaxed text-tertiary pt-3 pb-[24px] text-center lg:text-left'>At Tomato Planet, we focus on what matters most for growers: healthy tomato plants and reliable harvests. Upload a clear photo of your tomato leaf (or fruit) to quickly spot issues and get practical treatment guidance.</p>
+                <p className='text-[18px] lg:pl-1 lg:text-[22px] leading-relaxed text-tertiary pt-3 pb-[24px] text-center lg:text-left'>At Tomato Planet, we focus on what matters most for growers: healthy tomato plants and reliable harvests. Upload a clear photo of your tomato leaf to quickly spot issues and get practical treatment guidance.</p>
 
                 <div className='flex justify-center items-center lg:justify-start'>
                     <Link to={'/detect'} className='py-[12px] text-[16px] text-white px-[28px] rounded-[14px] bg-primary shadow-sm hover:opacity-95 transition-opacity'>Begin Analysis</Link>
@@ -63,7 +63,7 @@ const Home = () => {
             <div className='rounded-[18px] border border-black/5 p-5 lg:p-6'>
                 <p className='text-[14px] text-tertiary'>Step 1</p>
                 <h3 className='text-[18px] lg:text-[20px] font-semibold pt-2'>Upload a clear photo</h3>
-                <p className='text-[16px] lg:text-[18px] text-tertiary pt-2 leading-relaxed'>Use a close-up of the tomato leaf (front and back) or fruit. Natural light helps.</p>
+                <p className='text-[16px] lg:text-[18px] text-tertiary pt-2 leading-relaxed'>Use a close-up of the tomato leaf or fruit. Natural light helps.</p>
             </div>
             <div className='rounded-[18px] border border-black/5 p-5 lg:p-6'>
                 <p className='text-[14px] text-tertiary'>Step 2</p>
@@ -104,26 +104,26 @@ const Home = () => {
         <div className='rounded-[22px] border border-black/5 bg-white p-6 lg:p-10'>
             <div className='flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6'>
                 <div>
-                    <h2 className='text-[26px] lg:text-[34px] font-semibold'>Common tomato issues we help you spot</h2>
-                    <p className='text-[16px] lg:text-[18px] text-tertiary pt-2 leading-relaxed'>Examples include leaf spots, blights, mold, nutrient stress, and pest damage.</p>
+                    <h2 className='text-[26px] lg:text-[34px] font-semibold'>Common tomato leaf diseases we help you spot</h2>
+                    <p className='text-[16px] lg:text-[18px] text-tertiary pt-2 leading-relaxed'>This system detects major tomato leaf diseases including Early Blight, Late Blight, and Leaf Mold.</p>
                 </div>
                 <Link to={'/detect'} className='py-[12px] text-[16px] text-white px-[22px] rounded-[14px] bg-primary shadow-sm hover:opacity-95 transition-opacity whitespace-nowrap'>Analyze a photo</Link>
             </div>
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 pt-6'>
                 <div className='rounded-[18px] border border-black/5 p-5'>
-                    <h3 className='font-semibold text-[18px]'>Leaf spots</h3>
-                    <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Small circular lesions, halos, or speckling—often worsens after wet weather.</p>
+                    <h3 className='font-semibold text-[18px]'>Early Blight</h3>
+                    <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Brown circular spots with concentric rings on older leaves. Often begins at the lower part of the plant and spreads upward.</p>
                 </div>
                 <div className='rounded-[18px] border border-black/5 p-5'>
-                    <h3 className='font-semibold text-[18px]'>Blight patterns</h3>
-                    <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Fast spreading browning, leaf collapse, or dark lesions that move upward.</p>
+                    <h3 className='font-semibold text-[18px]'>Late Blight</h3>
+                    <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Dark, water-soaked lesions that rapidly expand. Leaves may turn brown or black and collapse quickly, especially in humid conditions.</p>
                 </div>
                 <div className='rounded-[18px] border border-black/5 p-5'>
-                    <h3 className='font-semibold text-[18px]'>Pest damage</h3>
-                    <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Chew marks, mines, curling leaves, or stunted new growth.</p>
+                    <h3 className='font-semibold text-[18px]'>Leaf Mold</h3>
+                    <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Yellow patches on the upper surface of leaves with fuzzy mold growth underneath. Common in warm, humid environments.</p>
                 </div>
             </div>
-            <p className='text-[14px] text-tertiary pt-4'>Note: results are informational and depend on photo quality.</p>
+            <p className='text-[14px] text-tertiary pt-4'>Note: The system can also identify when an image is not a tomato leaf.</p>
         </div>
 
         <div className='flex justify-center items-center mt-[56px] lg:mt-[72px] pb-[28px] lg:pb-[36px]'>
@@ -201,7 +201,7 @@ const Home = () => {
                     </div>
                     <div className='rounded-[18px] border border-black/5 p-5'>
                         <h3 className='font-semibold text-[18px]'>Can I upload tomato fruit images too?</h3>
-                        <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Yes—fruit issues like discoloration, lesions, or cracking can also be assessed.</p>
+                        <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>No — only leaf images are acceptable</p>
                     </div>
                     <div className='rounded-[18px] border border-black/5 p-5'>
                         <h3 className='font-semibold text-[18px]'>Do you store my images?</h3>

@@ -33,16 +33,16 @@ const About = () => {
             <p className='text-[16px] lg:text-[18px] text-tertiary pt-2 leading-relaxed'>We focus on signals you can see in real photos of your tomato plant.</p>
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-6'>
                 <div className='rounded-[18px] border border-black/5 p-5'>
-                    <h3 className='font-semibold text-[18px]'>Leaf symptoms</h3>
-                    <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Spots, browning, yellowing, curling, and mildew-like patterns.</p>
+                    <h3 className='font-semibold text-[18px]'>Early Blight</h3>
+                    <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Brown circular spots with concentric rings, usually appearing on older leaves and spreading upward.</p>
                 </div>
                 <div className='rounded-[18px] border border-black/5 p-5'>
-                    <h3 className='font-semibold text-[18px]'>Fruit symptoms</h3>
-                    <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Discoloration, lesions, cracking, and surface damage.</p>
+                    <h3 className='font-semibold text-[18px]'>Late Blight</h3>
+                    <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Dark, water-soaked lesions that spread rapidly, causing leaves to turn brown or black and collapse.</p>
                 </div>
                 <div className='rounded-[18px] border border-black/5 p-5'>
-                    <h3 className='font-semibold text-[18px]'>Care context</h3>
-                    <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Simple prevention and treatment ideas to guide your next steps.</p>
+                    <h3 className='font-semibold text-[18px]'>Leaf Mold</h3>
+                    <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Yellow patches on the upper leaf surface with fuzzy mold growth underneath, common in humid conditions.</p>
                 </div>
             </div>
         </div>
