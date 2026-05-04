@@ -153,17 +153,44 @@ def _has_possible_leaf_visual_signal(visual_evidence: dict) -> bool:
     )
 
 
+def _has_photographic_leaf_signal(visual_evidence: dict) -> bool:
+    """Allow real leaf photos that look graphic because of a plain background."""
+    straight_line_count = int(_visual_metric(visual_evidence, "straight_line_count"))
+    candidate_count = int(_visual_metric(visual_evidence, "candidate_count"))
+    aspect_ratio = _visual_metric(visual_evidence, "largest_green_contour_aspect_ratio")
+
+    has_centered_green_leaf = (
+        bool(visual_evidence.get("has_centered_leaf_signal"))
+        and _visual_metric(visual_evidence, "center_green_color_ratio") >= 0.025
+        and (
+            _visual_metric(visual_evidence, "green_contour_area_ratio") >= 0.035
+            or _visual_metric(visual_evidence, "max_contour_area_ratio") >= 0.05
+        )
+    )
+    has_leaf_shaped_contour = (
+        1.15 <= aspect_ratio <= 6.0
+        and (
+            _visual_metric(visual_evidence, "largest_green_contour_dominance_ratio") >= 0.3
+            or candidate_count <= 3
+        )
+    )
+    lacks_diagram_line_structure = straight_line_count < DIAGRAM_LINE_COUNT_THRESHOLD
+
+    return has_centered_green_leaf and has_leaf_shaped_contour and lacks_diagram_line_structure
+
+
 def _is_hard_visual_reject(visual_evidence: dict) -> bool:
     """Reject only obvious unsupported inputs before model inference.
 
     Real leaf photos vary a lot in lighting, background, disease color, and framing.
-    This pre-model guardrail should therefore be conservative: when there is any
-    plausible leaf signal, let the model and regional voting make the decision.
+    Diagram and graphic-like inputs are different: colored blocks can look green
+    enough to mimic plant pixels, so reject them before model inference.
     """
     has_possible_leaf_signal = _has_possible_leaf_visual_signal(visual_evidence)
+    has_photographic_leaf_signal = _has_photographic_leaf_signal(visual_evidence)
 
     if visual_evidence.get("is_diagram_like") or visual_evidence.get("is_graphic_like"):
-        return not has_possible_leaf_signal
+        return not has_photographic_leaf_signal
 
     if not has_possible_leaf_signal:
         return True

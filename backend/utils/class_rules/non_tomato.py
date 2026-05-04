@@ -24,6 +24,52 @@ def has_supported_tomato_candidate(summary: dict) -> bool:
     )
 
 
+def tomato_symptom_fallback_class(evidence: dict) -> str:
+    if evidence["brown_symptom_ratio"] >= 0.008 or evidence["lesion_ratio"] >= 0.02:
+        return "Early Blight"
+    if evidence["dark_symptom_ratio"] >= 0.055:
+        return "Late Blight"
+    if evidence["yellow_symptom_ratio"] >= 0.025:
+        return "Leaf Mold"
+
+    return "Early Blight"
+
+
+def has_tomato_like_scene(visual_evidence: dict, evidence: dict) -> bool:
+    candidate_count = int(metric(visual_evidence, "candidate_count"))
+    has_compound_leaf_structure = (
+        bool(visual_evidence.get("is_multi_leaf_scene"))
+        or candidate_count >= 2
+        or (
+            metric(visual_evidence, "green_color_ratio") >= 0.08
+            and metric(visual_evidence, "largest_green_contour_dominance_ratio") < 0.72
+        )
+    )
+    has_tomato_leaf_visual = (
+        bool(visual_evidence.get("has_leaf_like_color"))
+        or bool(visual_evidence.get("has_centered_leaf_signal"))
+        or metric(visual_evidence, "center_green_color_ratio") >= 0.025
+        or metric(visual_evidence, "green_contour_area_ratio") >= 0.025
+    )
+    has_soft_symptom_signal = (
+        bool(visual_evidence.get("has_centered_symptom_signal"))
+        or evidence["visible_symptom_ratio"] >= 0.01
+        or evidence["yellow_symptom_ratio"] >= 0.012
+        or evidence["brown_symptom_ratio"] >= 0.004
+        or evidence["dark_symptom_ratio"] >= 0.008
+    )
+
+    return (
+        has_possible_leaf_signal(visual_evidence)
+        and has_tomato_leaf_visual
+        and has_compound_leaf_structure
+        and has_soft_symptom_signal
+        and not has_large_banana_like_leaf_profile(visual_evidence)
+        and not has_broad_non_tomato_leaf_profile(visual_evidence)
+        and not has_general_non_tomato_leaf_profile(visual_evidence)
+    )
+
+
 def apply_non_tomato_rule(summary: dict, visual_evidence: dict) -> dict:
     primary = summary.get("primary_disease")
     primary_class = primary.get("class") if primary else None
@@ -37,6 +83,37 @@ def apply_non_tomato_rule(summary: dict, visual_evidence: dict) -> dict:
     is_multi_leaf_scene = bool(visual_evidence.get("is_multi_leaf_scene"))
     has_tomato_primary = primary_class in TOMATO_CLASSES
     has_tomato_support = has_supported_tomato_candidate(summary)
+    has_tomato_disease_symptom_signal = (
+        evidence["visible_symptom_ratio"] >= 0.018
+        or evidence["yellow_symptom_ratio"] >= 0.025
+        or evidence["brown_symptom_ratio"] >= 0.01
+        or evidence["dark_symptom_ratio"] >= 0.018
+    )
+    has_tomato_like_symptomatic_scene = (
+        has_tomato_disease_symptom_signal
+        or has_tomato_like_scene(visual_evidence, evidence)
+    )
+
+    if (
+        primary_class == NON_LEAF_CLASS
+        and has_tomato_like_symptomatic_scene
+    ):
+        for candidate_class in ("Early Blight", "Late Blight", "Leaf Mold"):
+            candidate = supported_candidate(summary, candidate_class, min_confidence=0.35)
+            if candidate:
+                return replace_primary(
+                    summary,
+                    candidate_class,
+                    "tomato_like_symptomatic_scene_overrides_non_leaf_result",
+                    evidence,
+                )
+
+        return replace_primary(
+            summary,
+            tomato_symptom_fallback_class(evidence),
+            "tomato_like_symptomatic_scene_visual_fallback",
+            evidence,
+        )
 
     if (
         has_large_banana_like_leaf_profile(visual_evidence)
@@ -87,13 +164,7 @@ def apply_non_tomato_rule(summary: dict, visual_evidence: dict) -> dict:
         or float(non_leaf_evidence.get("center_confidence", 0.0)) >= 0.75
         or float(non_leaf_evidence.get("region_ratio", 0.0)) >= 0.25
     )
-    has_tomato_disease_symptom_signal = (
-        evidence["visible_symptom_ratio"] >= 0.018
-        or evidence["yellow_symptom_ratio"] >= 0.025
-        or evidence["brown_symptom_ratio"] >= 0.01
-        or evidence["dark_symptom_ratio"] >= 0.018
-    )
-    if has_strong_non_leaf_model_signal and not has_tomato_disease_symptom_signal:
+    if has_strong_non_leaf_model_signal and not has_tomato_like_symptomatic_scene:
         return visual_non_tomato(
             summary,
             "non_leaf_model_signal_without_tomato_symptoms",
