@@ -1,0 +1,69 @@
+{
+  "early-blight": {
+    "name": "Early Blight",
+    "description": "Brown circular spots with concentric rings, commonly starting on older lower leaves.",
+    "biological": [
+      "Remove infected leaves and dispose of them away from the planting area.",
+      "Improve airflow by pruning dense foliage and spacing plants properly."
+    ],
+    "chemical": [
+      "Use a tomato-safe fungicide according to the product label when disease pressure is high."
+    ],
+    "prevention": [
+      "Avoid overhead watering.",
+      "Mulch around plants to reduce soil splash.",
+      "Rotate tomato crops away from the same soil for future seasons."
+    ]
+  },
+  "late-blight": {
+    "name": "Late Blight",
+    "description": "Fast-spreading dark, water-soaked lesions that can collapse leaves and stems in humid weather.",
+    "biological": [
+      "Remove badly infected plants quickly to reduce spread.",
+      "Keep foliage dry and improve ventilation around plants."
+    ],
+    "chemical": [
+      "Apply a labeled protective fungicide early when local late blight risk is high."
+    ],
+    "prevention": [
+      "Use disease-free seedlings.",
+      "Avoid working with plants while leaves are wet.",
+      "Destroy volunteer tomato or potato plants nearby."
+    ]
+  },
+  "leaf-mold": {
+    "name": "Leaf Mold",
+    "description": "Yellow patches on upper leaf surfaces with fuzzy mold growth underneath, especially in humid areas.",
+    "biological": [
+      "Remove affected leaves and reduce humidity around the crop.",
+      "Increase spacing and airflow in greenhouse or covered growing areas."
+    ],
+    "chemical": [
+      "Use a labeled fungicide if symptoms continue after humidity control."
+    ],
+    "prevention": [
+      "Water at the base of the plant.",
+      "Ventilate covered growing areas.",
+      "Choose resistant varieties when available."
+    ]
+  },
+  "healthy-tomato-leaf": {
+    "name": "Healthy Tomato Leaf",
+    "description": "The uploaded leaf appears healthy based on the model prediction.",
+    "biological": [],
+    "chemical": [],
+    "prevention": [
+      "Continue regular inspection for spots, discoloration, or wilting.",
+      "Maintain consistent watering and balanced nutrition."
+    ]
+  },
+  "non-tomato-leaf": {
+    "name": "Non-Tomato Leaf",
+    "description": "The uploaded image does not appear to be a tomato leaf.",
+    "biological": [],
+    "chemical": [],
+    "prevention": [
+      "Upload a clear tomato leaf image in good lighting for best results."
+    ]
+  }
+}

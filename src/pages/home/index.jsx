@@ -32,9 +32,9 @@ const Home = () => {
         return () => window.clearInterval(id);
     }, [slides.length]);
 
-    return (<div className="px-[20px] lg:px-[120px]">
+    return (<div className="mx-auto w-full max-w-[1600px] px-[20px] lg:px-[120px]">
         <div className="flex flex-col-reverse lg:flex-row justify-between items-center gap-[40px] lg:gap-[56px] pt-[12px] lg:pt-[24px]">
-            <div className="lg:w-1/2">
+            <div className="w-full lg:w-1/2">
                 <h1 className="lg:text-[42px] text-[32px] leading-tight text-center lg:text-left">Welcome to <span className="font-bold">Tomato Planet</span></h1>
 
                 <p className='text-[18px] lg:pl-1 lg:text-[22px] leading-relaxed text-tertiary pt-3 pb-[24px] text-center lg:text-left'>At Tomato Planet, we focus on what matters most for growers: healthy tomato plants and reliable harvests. Upload a clear photo of your tomato leaf to quickly spot issues and get practical treatment guidance.</p>
@@ -43,12 +43,12 @@ const Home = () => {
                     <Link to={'/detect'} className='py-[12px] text-[16px] text-white px-[28px] rounded-[14px] bg-primary shadow-sm hover:opacity-95 transition-opacity'>Begin Analysis</Link>
                 </div>
             </div>
-            <div className="lg:w-1/2 flex gap-[20px]">
-                <div className='flex flex-col gap-[20px]'>
+            <div className="flex w-full gap-[20px] lg:w-1/2">
+                <div className='flex min-w-0 w-1/2 flex-col gap-[20px]'>
                     <img src={img1} alt="Tomato plant" className="rounded-[16px] object-cover w-full h-[190px] lg:h-[220px]" />
                     <img src={img2} alt="Tomatoes on vine" className="rounded-[16px] object-cover w-full h-[190px] lg:h-[220px]" />
                 </div>
-                <div className='flex flex-col gap-[20px]'>
+                <div className='flex min-w-0 w-1/2 flex-col gap-[20px]'>
                     <img src={img3} alt="Tomato harvest" className="rounded-[16px] object-cover w-full h-[190px] lg:h-[220px]" />
                     <img src={img4} alt="Tomato leaves" className="rounded-[16px] object-cover w-full h-[190px] lg:h-[220px]" />
                 </div>
@@ -56,38 +56,38 @@ const Home = () => {
         </div>
 
         <div className='flex justify-center items-center mt-[56px] lg:mt-[72px] pb-[28px] lg:pb-[36px]'>
-            <div className='h-[4px] rounded-[10px] w-[70%] bg-quaternary'></div>
+            <div className='h-[4px] rounded-[10px] w-full max-w-[760px] bg-quaternary'></div>
         </div>
 
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6'>
-            <div className='rounded-[18px] border border-black/5 p-5 lg:p-6'>
+            <div className='h-full rounded-[18px] border border-black/5 p-5 lg:p-6'>
                 <p className='text-[14px] text-tertiary'>Step 1</p>
                 <h3 className='text-[18px] lg:text-[20px] font-semibold pt-2'>Upload a clear photo</h3>
                 <p className='text-[16px] lg:text-[18px] text-tertiary pt-2 leading-relaxed'>Use a close-up of the tomato leaf or fruit. Natural light helps.</p>
             </div>
-            <div className='rounded-[18px] border border-black/5 p-5 lg:p-6'>
+            <div className='h-full rounded-[18px] border border-black/5 p-5 lg:p-6'>
                 <p className='text-[14px] text-tertiary'>Step 2</p>
                 <h3 className='text-[18px] lg:text-[20px] font-semibold pt-2'>Get likely matches</h3>
                 <p className='text-[16px] lg:text-[18px] text-tertiary pt-2 leading-relaxed'>We return probable issues and a quick health summary you can act on.</p>
             </div>
-            <div className='rounded-[18px] border border-black/5 p-5 lg:p-6'>
+            <div className='h-full rounded-[18px] border border-black/5 p-5 lg:p-6'>
                 <p className='text-[14px] text-tertiary'>Step 3</p>
                 <h3 className='text-[18px] lg:text-[20px] font-semibold pt-2'>Follow treatment tips</h3>
-                <p className='text-[16px] lg:text-[18px] text-tertiary pt-2 leading-relaxed'>See prevention, biological, and chemical options (where applicable).</p>
+                <p className='text-[16px] lg:text-[18px] text-tertiary pt-2 leading-relaxed'>See prevention, biological, and chemical options where applicable.</p>
             </div>
         </div>
 
         <div className='flex justify-center items-center mt-[56px] lg:mt-[72px] pb-[28px] lg:pb-[36px]'>
-            <div className='h-[4px] rounded-[10px] w-[70%] bg-quaternary'></div>
+            <div className='h-[4px] rounded-[10px] w-full max-w-[760px] bg-quaternary'></div>
         </div>
 
-        <div className=''>
+        <div className='mx-auto max-w-[980px]'>
             <h1 className="text-[30px] lg:text-[40px] text-center pb-[16px]">Why <span className="font-bold">Choose Us?
             </span></h1>
-            <p className='text-[18px] lg:text-[20px] leading-relaxed text-tertiary'>
+            <p className='text-center text-[18px] lg:text-[20px] leading-relaxed text-tertiary'>
                 Tomato Planet is designed to be fast and practical. Whether you grow tomatoes in a backyard bed, a greenhouse, or a farm plot, our tools help you recognize common tomato issues early and respond with confidence.
             </p>
-            <ul className='text-[18px] lg:text-[20px] text-tertiary list-disc pl-4 lg:pl-0 px-4 mt-4 space-y-2'>
+            <ul className='mx-auto mt-5 max-w-[820px] list-disc space-y-2 pl-6 text-[18px] text-tertiary lg:text-[20px]'>
                 <li>Tomato Disease Detection: Identify common tomato problems from a single photo.
                 </li>
                 <li>Actionable Next Steps: Clear treatment and prevention ideas you can apply right away.
@@ -98,7 +98,7 @@ const Home = () => {
         </div>
 
         <div className='flex justify-center items-center mt-[56px] lg:mt-[72px] pb-[28px] lg:pb-[36px]'>
-            <div className='h-[4px] rounded-[10px] w-[70%] bg-quaternary'></div>
+            <div className='h-[4px] rounded-[10px] w-full max-w-[760px] bg-quaternary'></div>
         </div>
 
         <div className='rounded-[22px] border border-black/5 bg-white p-6 lg:p-10'>
@@ -110,15 +110,15 @@ const Home = () => {
                 <Link to={'/detect'} className='py-[12px] text-[16px] text-white px-[22px] rounded-[14px] bg-primary shadow-sm hover:opacity-95 transition-opacity whitespace-nowrap'>Analyze a photo</Link>
             </div>
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 pt-6'>
-                <div className='rounded-[18px] border border-black/5 p-5'>
+                <div className='h-full rounded-[18px] border border-black/5 p-5'>
                     <h3 className='font-semibold text-[18px]'>Early Blight</h3>
                     <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Brown circular spots with concentric rings on older leaves. Often begins at the lower part of the plant and spreads upward.</p>
                 </div>
-                <div className='rounded-[18px] border border-black/5 p-5'>
+                <div className='h-full rounded-[18px] border border-black/5 p-5'>
                     <h3 className='font-semibold text-[18px]'>Late Blight</h3>
                     <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Dark, water-soaked lesions that rapidly expand. Leaves may turn brown or black and collapse quickly, especially in humid conditions.</p>
                 </div>
-                <div className='rounded-[18px] border border-black/5 p-5'>
+                <div className='h-full rounded-[18px] border border-black/5 p-5'>
                     <h3 className='font-semibold text-[18px]'>Leaf Mold</h3>
                     <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>Yellow patches on the upper surface of leaves with fuzzy mold growth underneath. Common in warm, humid environments.</p>
                 </div>
@@ -127,7 +127,7 @@ const Home = () => {
         </div>
 
         <div className='flex justify-center items-center mt-[56px] lg:mt-[72px] pb-[28px] lg:pb-[36px]'>
-            <div className='h-[4px] rounded-[10px] w-[70%] bg-quaternary'></div>
+            <div className='h-[4px] rounded-[10px] w-full max-w-[760px] bg-quaternary'></div>
         </div>
 
         <div className='flex flex-col items-center'>
@@ -140,7 +140,7 @@ const Home = () => {
 
                 <div className="relative z-10 overflow-hidden">
                     <div
-                        className="flex transition-transform duration-500 ease-out gap-6 lg:gap-8"
+                        className="flex gap-[20px] transition-transform duration-500 ease-out"
                         style={{
                             transform: `translateX(calc(${activeSlide} * -240px))`,
                         }}
@@ -188,10 +188,10 @@ const Home = () => {
         </div>
 
         <div className='flex justify-center items-center mt-[56px] lg:mt-[72px] pb-[28px] lg:pb-[36px]'>
-            <div className='h-[4px] rounded-[10px] w-[70%] bg-quaternary'></div>
+            <div className='h-[4px] rounded-[10px] w-full max-w-[760px] bg-quaternary'></div>
         </div>
 
-        <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-start'>
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-stretch'>
             <div>
                 <h2 className='text-[26px] lg:text-[34px] font-semibold'>FAQ</h2>
                 <div className='pt-4 space-y-4'>
@@ -201,15 +201,15 @@ const Home = () => {
                     </div>
                     <div className='rounded-[18px] border border-black/5 p-5'>
                         <h3 className='font-semibold text-[18px]'>Can I upload tomato fruit images too?</h3>
-                        <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>No — only leaf images are acceptable</p>
+                        <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>No - only leaf images are acceptable.</p>
                     </div>
                     <div className='rounded-[18px] border border-black/5 p-5'>
                         <h3 className='font-semibold text-[18px]'>Do you store my images?</h3>
-                        <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>We only use your upload to generate results. If you want a stricter policy, we can add an explicit “no storage” note on the site.</p>
+                        <p className='text-tertiary text-[16px] pt-2 leading-relaxed'>We only use your upload to generate results.</p>
                     </div>
                 </div>
             </div>
-            <div className='rounded-[22px] bg-quaternary text-white p-6 lg:p-10'>
+            <div className='flex h-full flex-col justify-between rounded-[22px] bg-quaternary text-white p-6 lg:p-10'>
                 <h3 className='text-[22px] lg:text-[28px] font-semibold'>Ready to check your tomato plant?</h3>
                 <p className='text-[16px] lg:text-[18px] pt-3 text-white/80 leading-relaxed'>Upload a photo and get likely matches plus treatment guidance in minutes.</p>
                 <div className='pt-6'>
