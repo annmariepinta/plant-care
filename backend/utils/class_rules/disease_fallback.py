@@ -16,7 +16,7 @@ def apply_visible_disease_fallback(summary: dict, visual_evidence: dict) -> dict
     evidence = symptom_evidence(visual_evidence)
     has_brown_lesions = (
         evidence["brown_symptom_ratio"] >= EARLY_BLIGHT_BROWN_RATIO_THRESHOLD
-        or evidence["lesion_ratio"] >= EARLY_BLIGHT_TOTAL_LESION_RATIO_THRESHOLD
+        and evidence["lesion_ratio"] >= EARLY_BLIGHT_TOTAL_LESION_RATIO_THRESHOLD
     )
     has_dark_lesions = evidence["dark_symptom_ratio"] >= LATE_BLIGHT_DARK_RATIO_THRESHOLD
     has_yellow_chlorosis = evidence["yellow_symptom_ratio"] >= LEAF_MOLD_CHLOROSIS_OVERRIDE_RATIO
@@ -42,10 +42,4 @@ def apply_visible_disease_fallback(summary: dict, visual_evidence: dict) -> dict
                 evidence,
             )
 
-    fallback_class = candidates[0]
-    return replace_primary(
-        summary,
-        fallback_class,
-        "visible_disease_symptoms_visual_fallback",
-        evidence,
-    )
+    return summary

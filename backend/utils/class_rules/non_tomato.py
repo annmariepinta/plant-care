@@ -10,6 +10,7 @@ from .common import (
     replace_primary,
     supported_candidate,
     symptom_evidence,
+    uncertain,
     visual_non_tomato,
 )
 
@@ -24,15 +25,71 @@ def has_supported_tomato_candidate(summary: dict) -> bool:
     )
 
 
-def tomato_symptom_fallback_class(evidence: dict) -> str:
-    if evidence["brown_symptom_ratio"] >= 0.008 or evidence["lesion_ratio"] >= 0.02:
+def tomato_symptom_fallback_class(evidence: dict) -> str | None:
+    if evidence["brown_symptom_ratio"] >= 0.012 and evidence["lesion_ratio"] >= 0.02:
         return "Early Blight"
     if evidence["dark_symptom_ratio"] >= 0.055:
         return "Late Blight"
     if evidence["yellow_symptom_ratio"] >= 0.025:
         return "Leaf Mold"
 
-    return "Early Blight"
+    return None
+
+
+def has_dominant_broad_leaf_geometry(visual_evidence: dict) -> bool:
+    has_large_centered_leaf = (
+        metric(visual_evidence, "center_green_color_ratio") >= 0.08
+        and (
+            metric(visual_evidence, "green_contour_area_ratio") >= 0.12
+            or metric(visual_evidence, "max_contour_area_ratio") >= 0.12
+            or metric(visual_evidence, "plant_color_ratio") >= 0.18
+        )
+    )
+    has_simple_leaf_shape = (
+        bool(visual_evidence.get("is_broad_simple_leaf_like"))
+        or (
+            metric(visual_evidence, "largest_green_contour_aspect_ratio") >= 1.25
+            and (
+                metric(visual_evidence, "largest_green_contour_dominance_ratio") >= 0.32
+                or metric(visual_evidence, "largest_green_contour_solidity") >= 0.5
+                or metric(visual_evidence, "largest_green_contour_extent") >= 0.24
+            )
+        )
+    )
+
+    return has_large_centered_leaf and has_simple_leaf_shape
+
+
+def has_strong_non_tomato_candidate(summary: dict, primary: dict | None) -> bool:
+    non_tomato = supported_candidate(summary, NON_LEAF_CLASS, min_confidence=0.75)
+    if not non_tomato:
+        return False
+
+    primary_score = float((primary or {}).get("score", 0.0))
+    return (
+        float(non_tomato.get("best_confidence", 0.0)) >= 0.9
+        or float(non_tomato.get("score", 0.0)) >= primary_score * 0.75
+    )
+
+
+def has_decisive_non_tomato_conflict(summary: dict, primary: dict | None) -> bool:
+    non_tomato = supported_candidate(summary, NON_LEAF_CLASS, min_confidence=0.9)
+    if not non_tomato or not primary:
+        return False
+
+    primary_regions = int(primary.get("region_count", 0))
+    non_tomato_regions = int(non_tomato.get("region_count", 0))
+    primary_score = float(primary.get("score", 0.0))
+    non_tomato_score = float(non_tomato.get("score", 0.0))
+
+    has_region_tie_or_better = non_tomato_regions >= max(primary_regions, 1)
+    has_near_tie_score = non_tomato_score >= primary_score * 0.9
+    has_extreme_non_tomato_confidence = (
+        float(non_tomato.get("best_confidence", 0.0)) >= 0.995
+        and float(non_tomato.get("average_confidence", 0.0)) >= 0.95
+    )
+
+    return has_region_tie_or_better and (has_near_tie_score or has_extreme_non_tomato_confidence)
 
 
 def has_tomato_like_scene(visual_evidence: dict, evidence: dict) -> bool:
@@ -93,6 +150,31 @@ def apply_non_tomato_rule(summary: dict, visual_evidence: dict) -> dict:
         has_tomato_disease_symptom_signal
         or has_tomato_like_scene(visual_evidence, evidence)
     )
+    has_dominant_non_tomato_leaf_shape = (
+        has_large_banana_like_leaf_profile(visual_evidence)
+        or has_broad_non_tomato_leaf_profile(visual_evidence)
+        or has_general_non_tomato_leaf_profile(visual_evidence)
+        or has_dominant_broad_leaf_geometry(visual_evidence)
+    )
+
+    if (
+        has_tomato_primary
+        and (
+            has_dominant_non_tomato_leaf_shape
+            or has_decisive_non_tomato_conflict(summary, primary)
+        )
+        and has_strong_non_tomato_candidate(summary, primary)
+    ):
+        return replace_primary(
+            summary,
+            NON_LEAF_CLASS,
+            "strong_non_tomato_conflict_overrides_disease_result",
+            {
+                **evidence,
+                "previous_primary_class": primary_class,
+                "previous_primary_score": float(primary.get("score", 0.0)),
+            },
+        )
 
     if (
         primary_class == NON_LEAF_CLASS
@@ -108,10 +190,18 @@ def apply_non_tomato_rule(summary: dict, visual_evidence: dict) -> dict:
                     evidence,
                 )
 
-        return replace_primary(
+        fallback_class = tomato_symptom_fallback_class(evidence)
+        if fallback_class:
+            return replace_primary(
+                summary,
+                fallback_class,
+                "tomato_like_symptomatic_scene_visual_fallback",
+                evidence,
+            )
+
+        return uncertain(
             summary,
-            tomato_symptom_fallback_class(evidence),
-            "tomato_like_symptomatic_scene_visual_fallback",
+            "tomato_like_symptomatic_scene_without_supported_model_class",
             evidence,
         )
 

@@ -676,7 +676,7 @@ def _combine_variant_predictions(variant_predictions: np.ndarray) -> tuple[np.nd
 
 
 def _predict_image_object(image: Image.Image, profile: str = "balanced") -> tuple[dict, int]:
-    variants = _build_image_variants(image, profile)
+    variants = [_resize(image)]
     variant_predictions = _predict_batch(variants)
     predictions, variant_evidence = _combine_variant_predictions(variant_predictions)
     result = _probabilities_to_result(predictions)
@@ -780,68 +780,9 @@ def _build_leaf_candidate_crops(image: Image.Image, max_candidates: int = 6) -> 
 
 def _build_region_crops(image: Image.Image, profile: str = "balanced") -> list[dict]:
     width, height = image.size
-    regions = [
+    return [
         _crop_region(image, "full", (0, 0, width, height)),
-        _crop_region(
-            image,
-            "center",
-            (
-                int(width * 0.15),
-                int(height * 0.15),
-                int(width * 0.85),
-                int(height * 0.85),
-            ),
-        ),
     ]
-
-    if profile != "fast":
-        for row in range(2):
-            for col in range(2):
-                left = int(width * col / 2)
-                top = int(height * row / 2)
-                right = int(width * (col + 1) / 2)
-                bottom = int(height * (row + 1) / 2)
-                regions.append(_crop_region(image, f"grid-2x2-r{row + 1}c{col + 1}", (left, top, right, bottom)))
-
-    crop_width = int(width * 0.5)
-    crop_height = int(height * 0.5)
-
-    if profile == "fast":
-        sliding_positions = [
-            ("center-window", (int(width * 0.25), int(height * 0.25))),
-        ]
-    else:
-        step_x = max((width - crop_width) // 2, 1)
-        step_y = max((height - crop_height) // 2, 1)
-        sliding_positions = [
-            (f"sliding-r{row + 1}c{col + 1}", (min(col * step_x, width - crop_width), min(row * step_y, height - crop_height)))
-            for row in range(3)
-            for col in range(3)
-        ]
-
-    for name, (left, top) in sliding_positions:
-        right = left + crop_width
-        bottom = top + crop_height
-        regions.append(_crop_region(image, name, (left, top, right, bottom)))
-
-    if profile != "fast":
-        focus_width = int(width * 0.34)
-        focus_height = int(height * 0.34)
-        focus_step_x = max((width - focus_width) // 2, 1)
-        focus_step_y = max((height - focus_height) // 2, 1)
-
-        for row in range(3):
-            for col in range(3):
-                left = min(col * focus_step_x, width - focus_width)
-                top = min(row * focus_step_y, height - focus_height)
-                right = left + focus_width
-                bottom = top + focus_height
-                regions.append(_crop_region(image, f"focus-r{row + 1}c{col + 1}", (left, top, right, bottom)))
-
-    leaf_candidate_limit = FAST_LEAF_CANDIDATE_LIMIT if profile == "fast" else BALANCED_LEAF_CANDIDATE_LIMIT
-    regions.extend(_build_leaf_candidate_crops(image, max_candidates=leaf_candidate_limit))
-
-    return regions
 
 
 def _build_fast_leaf_variants(image: Image.Image) -> list[Image.Image]:
@@ -871,6 +812,32 @@ def _dedupe_region_results(region_results: list[dict]) -> list[dict]:
 
 def _summary_item_for_class(disease_summary: list[dict], disease_class: str) -> dict | None:
     return next((item for item in disease_summary if item["class"] == disease_class), None)
+
+
+def _has_decisive_non_leaf_summary_conflict(primary: dict | None, non_leaf: dict | None) -> bool:
+    if not primary or not non_leaf or primary.get("class") == NON_LEAF_CLASS:
+        return False
+
+    primary_regions = int(primary.get("region_count", 0))
+    non_leaf_regions = int(non_leaf.get("region_count", 0))
+    primary_score = float(primary.get("score", 0.0))
+    non_leaf_score = float(non_leaf.get("score", 0.0))
+    non_leaf_best_confidence = float(non_leaf.get("best_confidence", 0.0))
+    non_leaf_average_confidence = float(non_leaf.get("average_confidence", 0.0))
+
+    has_region_tie_or_better = non_leaf_regions >= max(primary_regions, 1)
+    has_near_tie_score = non_leaf_score >= primary_score * 0.75
+    has_extreme_non_leaf_confidence = (
+        non_leaf_best_confidence >= 0.995
+        and non_leaf_average_confidence >= 0.95
+    )
+
+    return (
+        primary.get("class") in DISEASE_CLASSES
+        and non_leaf_best_confidence >= NON_LEAF_CONFIDENCE_THRESHOLD
+        and has_region_tie_or_better
+        and (has_near_tie_score or has_extreme_non_leaf_confidence)
+    )
 
 
 def _replace_primary_disease(summary: dict, new_class: str, reason: str, evidence: dict) -> dict:
@@ -1491,78 +1458,30 @@ def _summarize_region_results(region_results: list[dict], visual_evidence: dict 
     disease_summary.sort(key=lambda item: item["score"], reverse=True)
     soft_disease_evidence.sort(key=lambda item: item["soft_score"], reverse=True)
     primary_disease = disease_summary[0] if disease_summary else None
-    best_leaf_disease = next(
-        (
-            item for item in disease_summary
-            if item.get("class") in DISEASE_CLASSES
-        ),
-        None,
-    )
+    non_leaf_candidate = _summary_item_for_class(disease_summary, NON_LEAF_CLASS)
 
-    if (
-        primary_disease is not None
-        and primary_disease.get("class") not in DISEASE_CLASSES
-        and best_leaf_disease is not None
-        and best_leaf_disease.get("region_count", 0) >= SECONDARY_MIN_REGIONS
-        and best_leaf_disease.get("best_confidence", 0.0) >= HEALTHY_DISEASE_OVERRIDE_MIN_CONFIDENCE
-    ):
+    if _has_decisive_non_leaf_summary_conflict(primary_disease, non_leaf_candidate):
+        previous_primary = primary_disease
         primary_disease = {
-            **best_leaf_disease,
-            "prioritized_over": disease_summary[0].get("class"),
-            "priority_reason": "supported_leaf_disease_evidence",
+            **non_leaf_candidate,
+            "prioritized_over": previous_primary.get("class"),
+            "priority_reason": "decisive_non_leaf_model_conflict",
+            "priority_evidence": {
+                "previous_primary_score": float(previous_primary.get("score", 0.0)),
+                "previous_primary_region_count": int(previous_primary.get("region_count", 0)),
+                "non_leaf_score": float(non_leaf_candidate.get("score", 0.0)),
+                "non_leaf_region_count": int(non_leaf_candidate.get("region_count", 0)),
+                "non_leaf_best_confidence": float(non_leaf_candidate.get("best_confidence", 0.0)),
+                "non_leaf_average_confidence": float(non_leaf_candidate.get("average_confidence", 0.0)),
+            },
         }
         disease_summary = [
             primary_disease,
             *(
                 item for item in disease_summary
-                if item.get("class") != primary_disease.get("class")
+                if item.get("class") != NON_LEAF_CLASS
             ),
         ]
-
-    early_blight = _summary_item_for_class(disease_summary, "Early Blight")
-    leaf_mold = _summary_item_for_class(disease_summary, "Leaf Mold")
-    if primary_disease and primary_disease.get("class") == "Leaf Mold" and early_blight:
-        visual_evidence = visual_evidence or {}
-        brown_ratio = float(visual_evidence.get("brown_symptom_ratio") or 0.0)
-        dark_ratio = float(visual_evidence.get("dark_symptom_ratio") or 0.0)
-        lesion_ratio = brown_ratio + dark_ratio
-        has_early_blight_model_support = (
-            early_blight.get("region_count", 0) >= SECONDARY_MIN_REGIONS
-            and early_blight.get("best_confidence", 0.0) >= HEALTHY_DISEASE_OVERRIDE_MIN_CONFIDENCE
-            and (
-                early_blight.get("score", 0.0) >= primary_disease.get("score", 0.0) * EARLY_BLIGHT_COMPETING_SCORE_RATIO
-                or early_blight.get("full_image_confidence", 0.0) >= REGION_CONFIDENCE_THRESHOLD
-            )
-        )
-        has_leaf_mold_lock = (
-            leaf_mold is not None
-            and leaf_mold.get("score", 0.0) >= early_blight.get("score", 0.0) * 1.35
-            and leaf_mold.get("region_count", 0) >= early_blight.get("region_count", 0) + 4
-        )
-        has_early_blight_visual_support = (
-            lesion_ratio >= EARLY_BLIGHT_LESION_RATIO_THRESHOLD
-            or early_blight.get("full_image_confidence", 0.0) >= REGION_CONFIDENCE_THRESHOLD
-        )
-
-        if has_early_blight_model_support and has_early_blight_visual_support and not has_leaf_mold_lock:
-            primary_disease = {
-                **early_blight,
-                "prioritized_over": "Leaf Mold",
-                "priority_reason": "supported_early_blight_lesion_evidence",
-                "priority_evidence": {
-                    "brown_symptom_ratio": brown_ratio,
-                    "dark_symptom_ratio": dark_ratio,
-                    "lesion_ratio": lesion_ratio,
-                    "leaf_mold_score": float(primary_disease.get("score", 0.0)),
-                },
-            }
-            disease_summary = [
-                primary_disease,
-                *(
-                    item for item in disease_summary
-                    if item.get("class") != primary_disease.get("class")
-                ),
-            ]
 
     secondary_diseases = []
 
@@ -1778,7 +1697,7 @@ def predict_image_regions(image_bytes: bytes, profile: str = "balanced"):
 
     if regular_regions:
         predictions = _predict_batch([
-            ImageOps.fit(region["image"], IMAGE_SIZE, method=Image.Resampling.LANCZOS)
+            _resize(region["image"])
             for region in regular_regions
         ])
 
@@ -1836,12 +1755,10 @@ def predict_image_regions(image_bytes: bytes, profile: str = "balanced"):
     region_results.sort(key=lambda item: item["confidence"], reverse=True)
     summary = _summarize_region_results(region_results, visual_evidence)
     summary = apply_class_rules(summary, visual_evidence)
-    if APPLY_VISUAL_DISEASE_CALIBRATION:
-        summary = _apply_late_leaf_mold_calibration(summary, visual_evidence)
-    elif not summary.get("calibration", {}).get("applied"):
+    if not summary.get("calibration", {}).get("applied"):
         summary = {
             **summary,
-            "calibration": {"applied": False, "disabled": True},
+            "calibration": {"applied": False, "disabled": True, "reason": "model_output_only"},
         }
 
     return {
