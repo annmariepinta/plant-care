@@ -62,3 +62,202 @@ body {
 .hamburger-menu.open .line:nth-child(3) {
   transform: rotate(45deg) translate(6px, -12px);
 }
+
+@media print {
+  @page {
+    size: A4;
+    margin: 9mm;
+  }
+
+  html,
+  body {
+    background: #ffffff;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .print-report,
+  .print-report * {
+    visibility: visible;
+  }
+
+  .print-report {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    color: #111111;
+    font-family: Arial, sans-serif;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  .print-report-body {
+    display: grid !important;
+    grid-template-columns: 0.78fr 1.22fr !important;
+    gap: 10px !important;
+    align-items: start !important;
+    padding-top: 0 !important;
+  }
+
+  .print-button {
+    display: none !important;
+  }
+
+  .print-report-header {
+    display: block !important;
+    border-bottom: 2px solid #C1121F;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+  }
+
+  .print-report-brand {
+    color: #C1121F;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .print-report-header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 1px 0;
+  }
+
+  .print-report-header p {
+    color: #555555;
+    font-size: 10px;
+  }
+
+  .print-image-wrap {
+    justify-content: flex-start !important;
+    padding: 0 !important;
+  }
+
+  .print-image-wrap > div {
+    border: 1px solid #dddddd !important;
+    border-radius: 8px !important;
+    padding: 6px !important;
+    background: #ffffff !important;
+  }
+
+  .print-image {
+    width: 100% !important;
+    max-height: 205px !important;
+    border-radius: 6px !important;
+    object-fit: cover;
+  }
+
+  .print-card {
+    border: 1px solid #dddddd !important;
+    border-radius: 8px !important;
+    padding: 10px !important;
+    break-inside: avoid;
+  }
+
+  .print-section {
+    break-inside: avoid;
+  }
+
+  .print-section-title {
+    font-size: 16px !important;
+    line-height: 1.15 !important;
+  }
+
+  .print-metrics {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+    padding-top: 8px !important;
+  }
+
+  .print-metric {
+    border: 1px solid #dddddd !important;
+    border-radius: 6px !important;
+    padding: 6px !important;
+  }
+
+  .print-treatment-block {
+    break-inside: avoid;
+    border: 0 !important;
+    border-top: 1px solid #e5e5e5 !important;
+    border-radius: 0 !important;
+    background: #ffffff !important;
+    padding: 6px 0 0 !important;
+    margin-top: 6px !important;
+  }
+
+  .print-report p,
+  .print-report li {
+    font-size: 9.5px !important;
+    line-height: 1.28 !important;
+  }
+
+  .print-report h3 {
+    font-size: 11px !important;
+    margin-top: 0 !important;
+  }
+
+  .print-report ul {
+    padding-top: 4px !important;
+    gap: 0 !important;
+  }
+
+  .print-report li {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .print-report li span:first-child {
+    width: 4px !important;
+    height: 4px !important;
+    margin-top: 5px !important;
+  }
+
+  .print-report [class*="rounded-[18px]"],
+  .print-report [class*="rounded-[14px]"],
+  .print-report [class*="rounded-[12px]"] {
+    border-radius: 7px !important;
+  }
+
+  .print-report [class*="p-5"],
+  .print-report [class*="lg:p-6"] {
+    padding: 9px !important;
+  }
+
+  .print-report [class*="pt-7"],
+  .print-report [class*="pt-6"],
+  .print-report [class*="pt-5"] {
+    padding-top: 8px !important;
+  }
+
+  .print-report [class*="space-y-4"] > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 6px !important;
+  }
+
+  .print-report [class*="text-[28px]"],
+  .print-report [class*="text-[32px]"],
+  .print-report [class*="lg:text-[38px]"] {
+    font-size: 16px !important;
+  }
+
+  .print-report [class*="text-[22px]"] {
+    font-size: 13px !important;
+  }
+
+  .print-report [class*="text-[18px]"],
+  .print-report [class*="text-[17px]"],
+  .print-report [class*="text-[16px]"],
+  .print-report [class*="text-[15px]"],
+  .print-report [class*="text-[14px]"] {
+    font-size: 9.5px !important;
+  }
+
+  .print-report [class*="tracking-[0.08em]"] {
+    letter-spacing: 0.04em !important;
+  }
+}

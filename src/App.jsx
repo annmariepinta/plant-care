@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from './pages/home';
 import Detect from './pages/detect';
+import DetectReport from './pages/detect/Report';
 import About from './pages/about';
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
@@ -23,8 +24,10 @@ function App() {
         >
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/index.html" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/detect" element={<Detect />} />
+            <Route path="/detect/report" element={<DetectReport />} />
             <Route path="/contact" element={<Contact />} />
           </Routes>
         </main>

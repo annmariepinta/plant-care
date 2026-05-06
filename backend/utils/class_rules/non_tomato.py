@@ -1,0 +1,321 @@
+from .common import (
+    DISEASE_CLASSES,
+    HEALTHY_CLASS,
+    NON_LEAF_CLASS,
+    has_broad_non_tomato_leaf_profile,
+    has_general_non_tomato_leaf_profile,
+    has_large_banana_like_leaf_profile,
+    has_possible_leaf_signal,
+    metric,
+    replace_primary,
+    supported_candidate,
+    symptom_evidence,
+    uncertain,
+    visual_non_tomato,
+)
+
+
+TOMATO_CLASSES = DISEASE_CLASSES | {HEALTHY_CLASS}
+
+
+def has_supported_tomato_candidate(summary: dict) -> bool:
+    return any(
+        supported_candidate(summary, candidate_class)
+        for candidate_class in TOMATO_CLASSES
+    )
+
+
+def tomato_symptom_fallback_class(evidence: dict) -> str | None:
+    if evidence["brown_symptom_ratio"] >= 0.012 and evidence["lesion_ratio"] >= 0.02:
+        return "Early Blight"
+    if evidence["dark_symptom_ratio"] >= 0.055:
+        return "Late Blight"
+    if evidence["yellow_symptom_ratio"] >= 0.025:
+        return "Leaf Mold"
+
+    return None
+
+
+def has_dominant_broad_leaf_geometry(visual_evidence: dict) -> bool:
+    has_large_centered_leaf = (
+        metric(visual_evidence, "center_green_color_ratio") >= 0.08
+        and (
+            metric(visual_evidence, "green_contour_area_ratio") >= 0.12
+            or metric(visual_evidence, "max_contour_area_ratio") >= 0.12
+            or metric(visual_evidence, "plant_color_ratio") >= 0.18
+        )
+    )
+    has_simple_leaf_shape = (
+        bool(visual_evidence.get("is_broad_simple_leaf_like"))
+        or (
+            metric(visual_evidence, "largest_green_contour_aspect_ratio") >= 1.25
+            and (
+                metric(visual_evidence, "largest_green_contour_dominance_ratio") >= 0.32
+                or metric(visual_evidence, "largest_green_contour_solidity") >= 0.5
+                or metric(visual_evidence, "largest_green_contour_extent") >= 0.24
+            )
+        )
+    )
+
+    return has_large_centered_leaf and has_simple_leaf_shape
+
+
+def has_strong_non_tomato_candidate(summary: dict, primary: dict | None) -> bool:
+    non_tomato = supported_candidate(summary, NON_LEAF_CLASS, min_confidence=0.75)
+    if not non_tomato:
+        return False
+
+    primary_score = float((primary or {}).get("score", 0.0))
+    return (
+        float(non_tomato.get("best_confidence", 0.0)) >= 0.9
+        or float(non_tomato.get("score", 0.0)) >= primary_score * 0.75
+    )
+
+
+def has_decisive_non_tomato_conflict(summary: dict, primary: dict | None) -> bool:
+    non_tomato = supported_candidate(summary, NON_LEAF_CLASS, min_confidence=0.9)
+    if not non_tomato or not primary:
+        return False
+
+    primary_regions = int(primary.get("region_count", 0))
+    non_tomato_regions = int(non_tomato.get("region_count", 0))
+    primary_score = float(primary.get("score", 0.0))
+    non_tomato_score = float(non_tomato.get("score", 0.0))
+
+    has_region_tie_or_better = non_tomato_regions >= max(primary_regions, 1)
+    has_near_tie_score = non_tomato_score >= primary_score * 0.9
+    has_extreme_non_tomato_confidence = (
+        float(non_tomato.get("best_confidence", 0.0)) >= 0.995
+        and float(non_tomato.get("average_confidence", 0.0)) >= 0.95
+    )
+
+    return has_region_tie_or_better and (has_near_tie_score or has_extreme_non_tomato_confidence)
+
+
+def has_tomato_like_scene(visual_evidence: dict, evidence: dict) -> bool:
+    candidate_count = int(metric(visual_evidence, "candidate_count"))
+    has_compound_leaf_structure = (
+        bool(visual_evidence.get("is_multi_leaf_scene"))
+        or candidate_count >= 2
+        or (
+            metric(visual_evidence, "green_color_ratio") >= 0.08
+            and metric(visual_evidence, "largest_green_contour_dominance_ratio") < 0.72
+        )
+    )
+    has_tomato_leaf_visual = (
+        bool(visual_evidence.get("has_leaf_like_color"))
+        or bool(visual_evidence.get("has_centered_leaf_signal"))
+        or metric(visual_evidence, "center_green_color_ratio") >= 0.025
+        or metric(visual_evidence, "green_contour_area_ratio") >= 0.025
+    )
+    has_soft_symptom_signal = (
+        bool(visual_evidence.get("has_centered_symptom_signal"))
+        or evidence["visible_symptom_ratio"] >= 0.01
+        or evidence["yellow_symptom_ratio"] >= 0.012
+        or evidence["brown_symptom_ratio"] >= 0.004
+        or evidence["dark_symptom_ratio"] >= 0.008
+    )
+
+    return (
+        has_possible_leaf_signal(visual_evidence)
+        and has_tomato_leaf_visual
+        and has_compound_leaf_structure
+        and has_soft_symptom_signal
+        and not has_large_banana_like_leaf_profile(visual_evidence)
+        and not has_broad_non_tomato_leaf_profile(visual_evidence)
+        and not has_general_non_tomato_leaf_profile(visual_evidence)
+    )
+
+
+def apply_non_tomato_rule(summary: dict, visual_evidence: dict) -> dict:
+    primary = summary.get("primary_disease")
+    primary_class = primary.get("class") if primary else None
+    evidence = symptom_evidence(visual_evidence)
+    has_visible_symptoms = (
+        evidence["visible_symptom_ratio"] >= 0.012
+        or evidence["yellow_symptom_ratio"] >= 0.018
+        or evidence["brown_symptom_ratio"] >= 0.008
+        or evidence["dark_symptom_ratio"] >= 0.012
+    )
+    is_multi_leaf_scene = bool(visual_evidence.get("is_multi_leaf_scene"))
+    has_tomato_primary = primary_class in TOMATO_CLASSES
+    has_tomato_support = has_supported_tomato_candidate(summary)
+    has_tomato_disease_symptom_signal = (
+        evidence["visible_symptom_ratio"] >= 0.018
+        or evidence["yellow_symptom_ratio"] >= 0.025
+        or evidence["brown_symptom_ratio"] >= 0.01
+        or evidence["dark_symptom_ratio"] >= 0.018
+    )
+    has_tomato_like_symptomatic_scene = (
+        has_tomato_disease_symptom_signal
+        or has_tomato_like_scene(visual_evidence, evidence)
+    )
+    has_dominant_non_tomato_leaf_shape = (
+        has_large_banana_like_leaf_profile(visual_evidence)
+        or has_broad_non_tomato_leaf_profile(visual_evidence)
+        or has_general_non_tomato_leaf_profile(visual_evidence)
+        or has_dominant_broad_leaf_geometry(visual_evidence)
+    )
+
+    if (
+        has_tomato_primary
+        and (
+            has_dominant_non_tomato_leaf_shape
+            or has_decisive_non_tomato_conflict(summary, primary)
+        )
+        and has_strong_non_tomato_candidate(summary, primary)
+    ):
+        return replace_primary(
+            summary,
+            NON_LEAF_CLASS,
+            "strong_non_tomato_conflict_overrides_disease_result",
+            {
+                **evidence,
+                "previous_primary_class": primary_class,
+                "previous_primary_score": float(primary.get("score", 0.0)),
+            },
+        )
+
+    if (
+        primary_class == NON_LEAF_CLASS
+        and has_tomato_like_symptomatic_scene
+    ):
+        for candidate_class in ("Early Blight", "Late Blight", "Leaf Mold"):
+            candidate = supported_candidate(summary, candidate_class, min_confidence=0.35)
+            if candidate:
+                return replace_primary(
+                    summary,
+                    candidate_class,
+                    "tomato_like_symptomatic_scene_overrides_non_leaf_result",
+                    evidence,
+                )
+
+        fallback_class = tomato_symptom_fallback_class(evidence)
+        if fallback_class:
+            return replace_primary(
+                summary,
+                fallback_class,
+                "tomato_like_symptomatic_scene_visual_fallback",
+                evidence,
+            )
+
+        return uncertain(
+            summary,
+            "tomato_like_symptomatic_scene_without_supported_model_class",
+            evidence,
+        )
+
+    if (
+        has_large_banana_like_leaf_profile(visual_evidence)
+        and not has_tomato_primary
+        and not has_tomato_support
+    ):
+        return visual_non_tomato(
+            summary,
+            "large_broad_banana_like_leaf_detected",
+            evidence,
+        )
+
+    if (
+        has_general_non_tomato_leaf_profile(visual_evidence)
+        and not has_tomato_primary
+        and not has_tomato_support
+    ):
+        return visual_non_tomato(
+            summary,
+            "general_non_tomato_leaf_profile_detected",
+            evidence,
+        )
+
+    if is_multi_leaf_scene and has_visible_symptoms:
+        return summary
+
+    has_clean_leaf_without_tomato_shape = (
+        has_possible_leaf_signal(visual_evidence)
+        and not bool(visual_evidence.get("has_leaf_like_color"))
+        and not has_visible_symptoms
+        and (
+            metric(visual_evidence, "center_green_color_ratio") >= 0.08
+            or metric(visual_evidence, "green_contour_area_ratio") >= 0.08
+            or metric(visual_evidence, "max_contour_area_ratio") >= 0.12
+        )
+    )
+    if has_clean_leaf_without_tomato_shape:
+        return visual_non_tomato(
+            summary,
+            "clean_leaf_without_tomato_shape_detected",
+            evidence,
+        )
+
+    non_leaf_evidence = summary.get("non_leaf_evidence", {})
+    has_strong_non_leaf_model_signal = (
+        bool(non_leaf_evidence.get("model_predicts_non_tomato_leaf"))
+        or float(non_leaf_evidence.get("full_image_confidence", 0.0)) >= 0.75
+        or float(non_leaf_evidence.get("center_confidence", 0.0)) >= 0.75
+        or float(non_leaf_evidence.get("region_ratio", 0.0)) >= 0.25
+    )
+    if has_strong_non_leaf_model_signal and not has_tomato_like_symptomatic_scene:
+        return visual_non_tomato(
+            summary,
+            "non_leaf_model_signal_without_tomato_symptoms",
+            {
+                **evidence,
+                "non_leaf_evidence": non_leaf_evidence,
+            },
+        )
+
+    if (
+        not primary
+        and has_possible_leaf_signal(visual_evidence)
+        and not has_visible_symptoms
+        and not supported_candidate(summary, HEALTHY_CLASS, min_confidence=0.45)
+    ):
+        return visual_non_tomato(
+            summary,
+            "uncertain_clean_leaf_defaults_to_non_tomato",
+            {
+                **evidence,
+                "non_leaf_evidence": non_leaf_evidence,
+            },
+        )
+
+    if has_broad_non_tomato_leaf_profile(visual_evidence):
+        if has_tomato_primary or has_tomato_support:
+            return summary
+
+        if not primary or primary.get("class") != NON_LEAF_CLASS:
+            return visual_non_tomato(
+                summary,
+                "broad_simple_leaf_profile_detected",
+                evidence,
+            )
+        return summary
+
+    if not primary or primary.get("class") != NON_LEAF_CLASS:
+        return summary
+
+    if not has_possible_leaf_signal(visual_evidence):
+        return summary
+
+    for candidate_class in ("Early Blight", "Late Blight", "Leaf Mold", HEALTHY_CLASS):
+        candidate = supported_candidate(summary, candidate_class)
+        if candidate:
+            return replace_primary(
+                summary,
+                candidate_class,
+                "leaf_visual_signal_overrides_non_leaf_result",
+                evidence,
+            )
+
+    return {
+        **summary,
+        "is_uncertain": False,
+        "uncertainty_reason": None,
+        "visual_consistency": {
+            "applied": True,
+            "from": NON_LEAF_CLASS,
+            "to": NON_LEAF_CLASS,
+            "reason": "leaf_visual_signal_keeps_non_tomato_leaf_result",
+            "evidence": evidence,
+        },
+    }
